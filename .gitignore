@@ -1,0 +1,8 @@
+.DS_STORE
+*-debug.log
+*-error.log
+/.nyc_output
+/tmp
+/yarn.lock
+/.vscode
+node_modules
