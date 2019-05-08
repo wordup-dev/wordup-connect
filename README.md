@@ -24,6 +24,11 @@ Download the WordPress plugin zip from the /dist folder.
 
 In your WordPress admin go to Tools -> Wordup connect and follow the instructions. 
 
+## Note
+
+This plugin should **not** be used in a production environment. 
+It's currently in an early beta stadium.
+
 ## Wordup CLI
 
 This source code is also a good example of what a wordup development stack looks like. Just clone this project and run wordup install:
