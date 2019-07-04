@@ -10,20 +10,5 @@
     "scripts": {
         "start": "wordup start || true",
         "build": "wordup export"
-    },
-    "wordup": {
-        "type": "plugins",
-        "projectName": "Wordup connect",
-        "slug": "wordup-connect/wordup-connect.php",
-        "wpInstall": {
-            "title": "Wordup connect",
-            "adminUser": "admin",
-            "adminPassword": 123456,
-            "adminEmail": "admin@wordup.dev",
-            "plugins": {
-                "updraftplus": "latest"
-            },
-            "themes": {}
-        }    
     }
 }

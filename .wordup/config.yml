@@ -1,0 +1,19 @@
+# This is the wordup config:
+# - You can customize two things here: 
+# - Your wordup specific config and the config of your WordPress installation
+# Documentation: https://docs.wordup.dev
+
+type: plugins
+projectName: Wordup connect
+slug: wordup-connect/wordup-connect.php
+wpInstall:
+  title: Wordup connect
+  plugins:
+    updraftplus: latest
+  themes: {}
+  language: en_US
+  users:
+    - name: admin
+      email: admin@wordup.dev
+      password: 123456
+      role: administrator
