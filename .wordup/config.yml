@@ -8,8 +8,7 @@ projectName: Wordup connect
 slug: wordup-connect/wordup-connect.php
 wpInstall:
   title: Wordup connect
-  plugins:
-    updraftplus: latest
+  plugins: {}
   themes: {}
   language: en_US
   users:
