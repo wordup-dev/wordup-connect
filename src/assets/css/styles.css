@@ -9,3 +9,10 @@
 .wordup-wrap .wordup-projects {
     margin-top:1em;
 }
+
+button.button-link.delete {
+    color:#a00 !important;
+}
+button.button-link.delete:hover {
+    opacity:0.8;
+}

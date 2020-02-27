@@ -2,7 +2,7 @@
 /** 
 * Plugin Name: Wordup-Connect
 * Description: This plugin connects your WordPress installation with the wordup development suite. 
-* Version: %%VERSION%%
+* Version: 0.2.0
 * Author: Wordup
 * Author URI: https://wordup.dev
 *
@@ -10,7 +10,10 @@
 */
 
 error_reporting( E_ALL );
-require_once __DIR__.'/includes/installer.php';
+
+require_once __DIR__.'/includes/rest.php';
+require_once __DIR__.'/includes/updater.php';
+
 if( ! defined( 'ABSPATH' ) ) exit;
 
 /** 
@@ -66,7 +69,13 @@ add_action( 'plugin_action_links_' . plugin_basename( __FILE__ ), 'wordup_connec
  */
 function wordup_admin_enqueue_scripts()
 {
-	wp_enqueue_style( 'wordup-admin', plugins_url('/assets/css/styles.css', __FILE__), false, '1.0.0' );
+	wp_enqueue_style( 'wordup-admin-css', plugins_url('/assets/css/styles.css', __FILE__), false, '1.0.0' );
+	wp_enqueue_script( 'wordup-admin-js', plugins_url('/assets/js/main.js', __FILE__), array( ), '1.0.0', true);
+	wp_localize_script( 'wordup-admin-js', 'wordupApiSettings', array(
+		'root' => esc_url_raw( rest_url() ),
+		'tools' => admin_url( '/tools.php?page=wordup-connect' ),
+		'nonce' => wp_create_nonce( 'wp_rest' )
+	) );
 }
 add_action( 'admin_enqueue_scripts', 'wordup_admin_enqueue_scripts' );
 
@@ -140,9 +149,7 @@ function wordup_projects_form() {
 		<h3><?php _e('Projects', 'wordup-connect'); ?></h3>
 		<?php _e('Add wordup hosted plugins or themes to this WordPress installation and provide the same update functionality like standard plugins/themes:', 'wordup-connect'); ?></p>
 
-		<form action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" method="post" >			
-			<input type="hidden" name="action" value="wordup_manage_projects">
-			<?php wp_nonce_field( 'wordup_manage_projects' ); ?>
+		<form action="" method="post" id="wordup-create-project" >			
 			<table class="form-table">
 				<tr>
 					<th scope="row"><?php _e('Add project:', 'wordup-connect'); ?></th>
@@ -153,7 +160,7 @@ function wordup_projects_form() {
 						</select>
 					</td>
 					<td>
-						<input type="text" class="regular-text" value="" placeholder="Project ID" name="wordup_project" />
+						<input type="text" class="regular-text" value="" placeholder="Project ID" name="wordup_project" required />
 					</td>
 					<td>
 						<input type="text" class="regular-text" value="" minlength="10" placeholder="Private key (optional)" name="wordup_private_key" />
@@ -177,18 +184,18 @@ function wordup_projects_form() {
 			</thead>
 			<tbody id="the-list">
 				<?php if(empty($wordup_projects)): ?>
-					<tr class="no-items"><td class="colspanchange" colspan="4"><?php _e('No projects found', 'wordup-connect'); ?></td></tr>
+					<tr class="no-items"><td class="colspanchange" colspan="5"><?php _e('No projects found', 'wordup-connect'); ?></td></tr>
 				<?php else: ?>
 					<?php foreach($wordup_projects as $id => $project): ?>
 						<tr>
 							<th scope="row"></th>
 							<td class="column-primary"> 
 								<strong>
-									<span class="row-title"><?php echo $id; ?></span>
+									<span class="row-title"><?php echo esc_html($id); ?></span>
 								</strong>
 								<div class="row-actions visible">
 									<span class="link"><a href="https://cloud.wordup.dev/projects">Project page</a></span> | 
-									<span class="delete"><a href="<?php echo wp_nonce_url(admin_url('tools.php?page=wordup-connect&action=wordup-delete-project&project='.$id), 'wordup_delete_project'); ?>" class="delete" aria-label="Delete project"><?php _e('Delete', 'wordup-connect'); ?></a></span>
+									<span class="delete"><button type="button" class="button-link delete" data-project="<?php echo esc_attr($id); ?>" aria-label="Delete project"><?php _e('Delete', 'wordup-connect'); ?></button></span>
 								</div>
 							</td>
 							<td > <?php echo !empty($project['private_key']) ?  substr($project['private_key'], 0, 3).'...'.substr($project['private_key'], -3) : '-'; ?> </td>
@@ -214,14 +221,7 @@ function wordup_projects_form() {
 								?>
 
 								<?php if(!$project_found): ?>
-									<?php _e('Not installed:', 'wordup-connect'); ?>
-									<form action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" method="post" >			
-										<input type="hidden" name="action" value="wordup_install_project">
-										<input type="hidden" name="project" value="<?php echo $id; ?>">
-										<input type="hidden" name="type" value="<?php echo $project['type']; ?>">
-										<?php wp_nonce_field( 'wordup_install_project' ); ?>
-										<button type="submit" aria-label="Install project"><?php _e('Install', 'wordup-connect'); ?></button>
-									</form>
+									<button type="button" class="install" aria-label="Install project" data-project="<?php echo esc_attr($id); ?>" ><?php _e('Install', 'wordup-connect'); ?></button>
 								<?php endif; ?>
 							</td>	
 						</tr>
@@ -246,87 +246,74 @@ function wordup_projects_form() {
 }
 
 /**
- * Wordup admin actions: Manage projects
+ * Wordup register REST
  */
-function wordup_admin_post_manage_projects() {
-
-	if ( !current_user_can( 'manage_options' ) )  {
-	    wp_die( __( 'You do not have sufficient permissions to access this page.' ,'wordup-connect') );
-	}
-
-	if (! isset( $_POST['_wpnonce'] ) || ! wp_verify_nonce( $_POST['_wpnonce'], 'wordup_manage_projects' ) ) {
-	    wp_die( 'Sorry, your nonce did not verify.');
-	}
-
-	$projects = get_option('wordup_projects', array()); 
-	
-	$type = $_POST['wordup_type'];
-	$project_id = $_POST['wordup_project'];
-
-	$projects[$project_id] = array(
-		'type' => $type,
-		'private_key' => $_POST['wordup_private_key']
-	);
-
-	update_option('wordup_projects', $projects);
-	wp_redirect( admin_url( '/tools.php?page=wordup-connect' ), 302 );
-
-	exit;
+function wordup_rest_router(){
+	(new Wordup_REST_Route)->register_routes();
 }
-add_action( 'admin_post_wordup_manage_projects', 'wordup_admin_post_manage_projects' );
+add_action('rest_api_init', 'wordup_rest_router');
 
 
 /**
- * Wordup admin actions: Manage projects
+ * Wordup admin updater
  */
-function wordup_admin_post_install_project() {
-	if ( !current_user_can( 'manage_options' ) )  {
-		wp_die( __( 'You do not have sufficient permissions to access this page.' ,'wordup-connect') );
+function wordup_admin_updater() {
+
+    if( !is_admin() ){
+        return;
 	}
 
-	if (! isset( $_POST['_wpnonce'] ) || ! wp_verify_nonce( $_POST['_wpnonce'], 'wordup_install_project' ) ) {
-		wp_die( 'Sorry, your nonce did not verify.');
-	}
+	if( !function_exists('get_plugin_data') ){
+        require_once( ABSPATH . 'wp-admin/includes/plugin.php' );
+    }
 
 	$wordup_projects = get_option('wordup_projects', array()); 
+    $all_plugins = get_plugins();
 
-	$project =  $wordup_projects[$_POST['project']];
-	$installer = new Wordup_Project_install($_POST['project'], $project['type'] );
-	$result = $installer->install( $project['private_key'] );
-	echo $result;
-	print_r($installer->logs['installer']);
-	
-	//wp_redirect( admin_url( '/tools.php?page=wordup-connect&installed_project='.($test ? 'yes' :'no') ), 302 );
-	//exit;
-}
-add_action( 'admin_post_wordup_install_project', 'wordup_admin_post_install_project' );
+	foreach($wordup_projects as $id => $project){
 
+		$slug = $project['type'] === 'plugins' ? $id.'/'.$id.'.php' : $id;
 
-/**
- * Wordup process get requests
- */
-function wordup_admin_process_get(){
+		$project_infos = array(
+			'id' => $id,
+			'key' => $project['private_key'],
+			'slug'		=> $slug,
+			'basename'	=> $slug,
+			'version'	=> false,
+		);
 
-	if(isset($_GET['action']) && $_GET['action'] === 'wordup-delete-project'){
-		$wordup_projects = get_option('wordup_projects', array()); 
+		if($project['type'] === 'theme'){
+			$theme_data = wp_get_theme($id);
 
-		if ( !current_user_can( 'manage_options' ) )  {
-			wp_die( __( 'You do not have sufficient permissions to access this page.' ,'wordup-connect') );
+			if($theme_data->exists()){
+				$project_infos['version'] = $theme_data->get('Version');
+				wordup_register_theme_update($project_infos );
+			}
+		}else if($project['type'] === 'plugin'){
+			$plugin_found = wordup_get_plugin_by_id($id, $all_plugins);
+
+			if(!empty($plugin_found)){
+				$project_infos['version'] = $plugin_found['Version'];
+				wordup_register_plugin_update($project_infos );
+			}
 		}
-	
-		if (! isset( $_GET['_wpnonce'] ) || ! wp_verify_nonce( $_GET['_wpnonce'], 'wordup_delete_project' ) ) {
-			wp_die( 'Sorry, your nonce did not verify.');
-		}
-	
-		unset($wordup_projects[$_GET['project']]);
-	
-		update_option('wordup_projects', $wordup_projects);
-	
-		wp_redirect( admin_url( '/tools.php?page=wordup-connect' ), 302 );
-		exit;
 	}
-	
+
+	// Check also for updates for this plugin
+	if(getenv('WORDUP_PROJECT') !== 'wordup-connect'){
+		
+		$infos = wordup_get_plugin_by_id('wordup-connect', $all_plugins);
+		$wordup_connect_infos = array(
+			'id' => 'wordup-connect',
+			'key' => '',
+			'slug'		=> 'wordup-connect/wordup-connect.php',
+			'basename'	=> 'wordup-connect/wordup-connect.php',
+			'version'	=> $infos['version'],
+		);
+		wordup_register_plugin_update($wordup_connect_infos);
+
+	}
 }
-add_action( 'init', 'wordup_admin_process_get' );
+add_action('init', 'wordup_admin_updater');
 
 

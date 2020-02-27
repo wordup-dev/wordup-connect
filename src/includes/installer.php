@@ -58,7 +58,6 @@ class Wordup_Project_install
         if($private_key){
             $dl_url = $dl_url.'?key='.$private_key;
         }
-        echo $dl_url;
         $installed = $upgrader->install( $dl_url);
         $this->add_log($upgrader->skin->wordup_feedback, 'installer');
 
