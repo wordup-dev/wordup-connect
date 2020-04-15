@@ -2,7 +2,7 @@
 /** 
 * Plugin Name: Wordup-Connect
 * Description: This plugin connects your WordPress installation with the wordup development suite. 
-* Version: 0.2.0
+* Version: %%VERSION%%
 * Author: Wordup
 * Author URI: https://wordup.dev
 *
@@ -194,7 +194,7 @@ function wordup_projects_form() {
 									<span class="row-title"><?php echo esc_html($id); ?></span>
 								</strong>
 								<div class="row-actions visible">
-									<span class="link"><a href="https://cloud.wordup.dev/projects">Project page</a></span> | 
+									<span class="link"><a href="https://console.wordup.dev/projects/<?php echo esc_attr($id); ?>">Project page</a></span> | 
 									<span class="delete"><button type="button" class="button-link delete" data-project="<?php echo esc_attr($id); ?>" aria-label="Delete project"><?php _e('Delete', 'wordup-connect'); ?></button></span>
 								</div>
 							</td>
@@ -255,7 +255,8 @@ add_action('rest_api_init', 'wordup_rest_router');
 
 
 /**
- * Wordup admin updater
+ * Wordup admin updater. This will be run, even on lower permission level
+ * The final update, will only be possible with admin permissions
  */
 function wordup_admin_updater() {
 
@@ -308,7 +309,7 @@ function wordup_admin_updater() {
 			'key' => '',
 			'slug'		=> 'wordup-connect/wordup-connect.php',
 			'basename'	=> 'wordup-connect/wordup-connect.php',
-			'version'	=> $infos['version'],
+			'version'	=> $infos['Version'],
 		);
 		wordup_register_plugin_update($wordup_connect_infos);
 

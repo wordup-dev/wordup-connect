@@ -251,7 +251,7 @@ class Wordup_Updater {
 	function api_call($param, $body = null ) {
 		
 		// vars
-		$url = 'https://wordup-test.appspot.com/'.$param;
+		$url = 'https://api.wordup.dev/'.$param;
 		
 		// post
 		$raw_response = wp_safe_remote_post( $url, array(
@@ -280,9 +280,6 @@ class Wordup_Updater {
     /**
      * Push in plugin version information to display in the details lightbox
      *
-     * @param  boolean $false
-     * @param  string $action
-     * @param  object $response
      * @return object
      */
     public function set_plugin_info( $result, $action = null, $args = null )

@@ -82,15 +82,15 @@ class Wordup_REST_Route extends WP_REST_Controller {
 
     $projects = get_option('wordup_projects', array()); 
 	
-	$type = $params['wordup_type'];
-	$project_id = $params['wordup_project'];
+    $type = $params['wordup_type'];
+    $project_id = $params['wordup_project'];
 
-	$projects[$project_id] = array(
-		'type' => $type,
-		'private_key' => $params['wordup_private_key']
-	);
+    $projects[$project_id] = array(
+      'type' => $type,
+      'private_key' => $params['wordup_private_key']
+    );
 
-	update_option('wordup_projects', $projects);
+    update_option('wordup_projects', $projects);
 
     return new WP_REST_Response( 201 );
     
@@ -112,7 +112,7 @@ class Wordup_REST_Route extends WP_REST_Controller {
 
     unset($wordup_projects[$params['wordup_project']]);
 	
-	update_option('wordup_projects', $wordup_projects);
+	  update_option('wordup_projects', $wordup_projects);
 
     return new WP_REST_Response( true, 204 );
       
@@ -133,7 +133,7 @@ class Wordup_REST_Route extends WP_REST_Controller {
 
     $project =  $wordup_projects[$params['wordup_project']];
     
-	$installer = new Wordup_Project_install($params['wordup_project'], $project['type'] );
+	  $installer = new Wordup_Project_install($params['wordup_project'], $project['type'] );
     $result = $installer->install( $project['private_key'] );
     
     return new WP_REST_Response( array('success' => $result, 'logs'=> $installer->logs['installer']), 200 );

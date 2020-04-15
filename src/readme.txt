@@ -3,7 +3,7 @@ Contributors: shry
 Tags: development, tools, wp-cli, backup, cli, wordup, updraftplus
 Requires at least: 4.5
 Tested up to: 5.1.1
-Stable tag: 0.1.0
+Stable tag: %%VERSION%%
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 

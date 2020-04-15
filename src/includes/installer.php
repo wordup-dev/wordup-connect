@@ -32,7 +32,7 @@ class Wordup_Quiet_Skin extends WP_Upgrader_Skin
 class Wordup_Project_install
 {
 
-    const API_SERVER = 'https://wordup-test.appspot.com/release_dl';
+    const API_SERVER = 'https://api.wordup.dev/release_dl';
     public $download_url = '';
     public $type = '';
     public $logs = array();
