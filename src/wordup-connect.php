@@ -9,48 +9,20 @@
 * @package   Wordup_connect
 */
 
-error_reporting( E_ALL );
+//error_reporting( E_ALL );
 
 require_once __DIR__.'/includes/rest.php';
 require_once __DIR__.'/includes/updater.php';
 
 if( ! defined( 'ABSPATH' ) ) exit;
 
-/** 
- * Set PHP mailer 
- * 
- */
-function wordup_local_mail_setup( PHPMailer $phpmailer ) {
-    $phpmailer->Host = 'mail';
-    $phpmailer->Port = 1025;
-    $phpmailer->IsSMTP();
-}
-
-if(getenv('WORDUP_PROJECT')){
-	add_action( 'phpmailer_init', 'wordup_local_mail_setup' );
-}
-
-
-/**
- * Register activation hook
- */
-function wordup_connect_activation(){
-	//Set private key
-	//$private_key = Wordup_backup::get_random_key();
-	//update_option('wordup_connect_private_key', $private_key);
-}
-register_activation_hook(__FILE__, 'wordup_connect_activation');
-
 /**
  * Register delete hook
  */
 function wordup_connect_uninstall(){
-	//Delete wordup folder
-	//$wordup_backup = new Wordup_backup();
-	//$wordup_backup->delete_all_wordup_folders();
+	delete_option('wordup_projects');
 }
 register_uninstall_hook(__FILE__, 'wordup_connect_uninstall');
-
 
 /**
  * Add settings link on plugins page
@@ -98,7 +70,6 @@ function wordup_plugin_options() {
 		wp_die( __( 'You do not have sufficient permissions to access this page.' ,'wordup-connect') );
 	}
 
-
 	?>
 	<div class="wrap wordup-wrap">
 		<section>
@@ -109,7 +80,7 @@ function wordup_plugin_options() {
 					<p><?php _e('You are currently developing the following wordup project: ', 'wordup-connect'); ?><strong><?php echo esc_html(getenv('WORDUP_PROJECT')); ?></strong></p>
 				</div>
 			<?php endif; ?>
-			<p><?php _e('The plugin connects this WordPress installation with wordup.', 'wordup-connect'); ?></p>
+			<p><?php _e('The wordup-connect plugin connects this WordPress installation with your plugin and theme directory on wordup.dev.', 'wordup-connect'); ?></p>
 			<hr />
 			<?php wordup_projects_form(); ?>
 		</section>
