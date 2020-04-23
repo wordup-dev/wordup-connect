@@ -2,7 +2,7 @@
 Contributors: shry
 Tags: development, tools, wp-cli, backup, cli, wordup, updates
 Requires at least: 4.5
-Tested up to: 5.1.1
+Tested up to: 5.4
 Stable tag: %%VERSION%%
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -11,7 +11,8 @@ This WordPress plugin connects your WordPress installation with your private plu
 
 == Description ==
 
-Wordup-connect give you access to your private or public WordPress Themes/Plugins hosted on https://wordup.dev
+Wordup-connect give you access to your private plugin and theme directory on https://wordup.dev
+
 Use wordup-connect for:
 
 * Downloading your themes or plugins from wordup.dev
