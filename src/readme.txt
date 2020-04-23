@@ -1,27 +1,23 @@
 === Wordup Connect ===
 Contributors: shry
-Tags: development, tools, wp-cli, backup, cli, wordup, updraftplus
+Tags: development, tools, wp-cli, backup, cli, wordup, updates
 Requires at least: 4.5
 Tested up to: 5.1.1
 Stable tag: %%VERSION%%
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
-This WordPress plugin connects your WordPress installation with your local wordup CLI.
+This WordPress plugin connects your WordPress installation with your private plugin and theme registry on https://wordup.dev
 
 == Description ==
 
-Wordup CLI is an open-source development toolkit for setting up and managing your local WordPress Theme/Plugin development, so that you can totally focus on coding.
-If you want to setup your local WordPress development stack, you can use this plugin to download automatically a backup of your public WordPress website. 
+Wordup-connect give you access to your private or public WordPress Themes/Plugins hosted on https://wordup.dev
 Use wordup-connect for:
 
-* Testing your public website on a local development server
-* Develop new plugins or themes based on an existing website
-* Export your new project and install it on a remote server
+* Downloading your themes or plugins from wordup.dev
+* Providing the automatic update functionality of WordPress for your private wordup plugins and themes  
 
 See [wordup.dev](https://wordup.dev) for more details.
-
-Wordup Connect uses updraftplus for backups.
 
 == Installation ==
 

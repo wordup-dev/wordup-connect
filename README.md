@@ -1,50 +1,31 @@
 Wordup Connect 
 ==============
 
-Wordup Connect is a WordPress plugin which connects a remote WordPress installation with your local wordup CLI.
+Wordup Connect give you access to your private WordPress themes and plugins hosted on https://wordup.dev.
 
-After you have installed this plugin on your server. Run locally:
+After you have installed this plugin on your server you are able to download all your themes and plugins from the wordup registry, furthermore your wordup hosted plugins and themes will be available for automatic updates whenever there is a new release.
+
+You can provide a new release with the wordup CLI:
 
 ```
-$ wordup install --connect=[url-of-your-wp-website]
+$ wordup cloud:publish --env=release
 ```
 
 ## How it works
 
-Wordup looks for an Updraftplus backup on your remote WordPress installation. If found, it will download the files to your wordup project and will install all components to run your development stack.
+Wordup-connect extends the default WordPress update functionality, so that we can provide you the same update workflow for your private themes and plugins than WordPress for there hosted plugins and themes.
+
+After you have released a new version of your plugin or theme on wordup.dev, all connected WordPress installation will be able to automatically update to the new version.
 
 ## Requirements
 
-* Install [wordup-cli](https://github.com/wordup-dev/wordup-cli) on your local machine
-* Install wordup-connect and Updraftplus on your remote WordPress installation. 
+* Install [wordup-cli](https://github.com/wordup-dev/wordup-cli) on your local machine or use the wordup [web interface](https://console.wordup.dev)
+* Install wordup-connect on your remote WordPress installation.
 
 ## Installation
 
-Download the WordPress plugin zip from the /dist folder.
+Download the WordPress plugin from https://api.wordup.dev/release_dl/wordup-connect/latest/wordup-connect.zip
 
-In your WordPress admin go to Tools -> Wordup connect and follow the instructions. 
+In your WordPress admin go to Tools -> Wordup connect and follow the instructions.
 
-## Note
-
-This plugin should **not** be used in a production environment. 
-It's currently in an early beta stadium.
-
-## Wordup CLI
-
-This source code is also a good example of what a wordup development stack looks like. Just clone this project and run wordup install:
-
-```
-$ git clone https://github.com/wordup-dev/wordup-connect
-
-$ wordup install
-```
-
-
-## FAQ
-
--  [Why is only Updraftplus supported?](#why-is-only-updraftplus-supported)
-
-### Why is only Updraftplus supported?
-
-It is planned to support other backup methods in future releases, but for now on Updraftplus as the most popular backup plugin is required. 
 
