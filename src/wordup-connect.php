@@ -80,7 +80,7 @@ function wordup_plugin_options() {
 					<p><?php _e('You are currently developing the following wordup project: ', 'wordup-connect'); ?><strong><?php echo esc_html(getenv('WORDUP_PROJECT')); ?></strong></p>
 				</div>
 			<?php endif; ?>
-			<p><?php _e('The wordup-connect plugin connects this WordPress installation with your plugin and theme directory on wordup.dev.', 'wordup-connect'); ?></p>
+			<p><?php printf( __('The wordup-connect plugin connects this WordPress installation with your plugin and theme directory on <a href="%s">wordup.dev</a>.', 'wordup-connect'), 'https://wordup.dev'); ?></p>
 			<hr />
 			<?php wordup_projects_form(); ?>
 		</section>
@@ -165,7 +165,7 @@ function wordup_projects_form() {
 									<span class="row-title"><?php echo esc_html($id); ?></span>
 								</strong>
 								<div class="row-actions visible">
-									<span class="link"><a href="https://console.wordup.dev/projects/<?php echo esc_attr($id); ?>">Project page</a></span> | 
+									<span class="link"><a href="https://console.wordup.dev/projects/<?php echo esc_attr($id); ?>" target="_blank">Project page</a></span> | 
 									<span class="delete"><button type="button" class="button-link delete" data-project="<?php echo esc_attr($id); ?>" aria-label="Delete project"><?php _e('Delete', 'wordup-connect'); ?></button></span>
 								</div>
 							</td>
